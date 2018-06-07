@@ -1,0 +1,11 @@
+Package: ARI
+Version: 0.1
+Date: 2017-05-17
+Title: All-Resolution Inference.
+Author: all of us
+Maintainer: livio finos <livio.finos@unipd.it>
+Description: Valid Circular Inference. (but also  Valid Cluster-wise Inference)
+License: GPL (>= 2)
+RoxygenNote: 5.0.1
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
