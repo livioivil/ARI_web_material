@@ -1,4 +1,4 @@
-*Supplementary material of * **Rosenblatt, Finos, Weeda, Solari, Goeman (2018). All-Resolutions Inference for Brain Imaging. Neuorimage.** https://doi.org/10.1016/j.neuroimage.2018.07.060
+*Supplementary material of* **Rosenblatt, Finos, Weeda, Solari, Goeman (2018). All-Resolutions Inference for Brain Imaging. Neuorimage.** https://doi.org/10.1016/j.neuroimage.2018.07.060
 
 
 - Results of the extended simulation:
