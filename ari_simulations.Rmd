@@ -1,0 +1,153 @@
+---
+title: "ARI - Simulations"
+output: 
+  html_document: 
+    toc: yes
+---
+
+
+
+```{r setup, include=FALSE,echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE,comment=FALSE,message=FALSE)
+library(knitr)
+library(neuRosim)
+library(arf3DS4)
+library(hommel)
+library(plyr)
+library(RNifti)
+try(setwd('~/Desktop'),silent = TRUE)
+
+source('functions_sim.R')
+source('compute_stats.R')
+data_folder="/home/livio/Downloads"
+
+```
+
+
+```{r settings}
+eval=FALSE
+
+#settings
+B=5000
+effsizes= c(0, 3, 4, 5, 10)
+
+
+t_thresholds=c(2.3, 3, 3.2)
+
+radii=c(5,10,20)
+
+names(effsizes)=effsizes
+names(t_thresholds)=t_thresholds
+names(radii)=radii
+
+
+dims <- c(64,64,1) #dimensions (x,y,z) of image
+FWHM <- 3 #(0, 3, 5, 7), smoothing kernel of noise field
+
+alpha=.05
+
+# DLH = 0.0342346
+FWHMX = FWHMY  <- FWHM
+FWHMZ =1
+DLH = (4* log(2))*3/2 / ( FWHMX * FWHMY * FWHMZ)
+# DLH = (4* log(2))*3/2 / ( FWHM)
+
+VOLUME = prod(dims)
+RESELS = FWHMX * FWHMY * FWHMZ
+NUMRESEL = VOLUME / RESELS
+
+coordList = list(c(32,32,1))
+
+```
+
+
+
+# Simulations
+
+- smoothnes: 3 
+
+loops over:  
+- radius:  `r paste(radii,sep=", ")`  
+- effsize:  `r paste(effsizes,sep=", ")`. REMARK: this is actually: $\delta\sqrt{n}$, e.g. $\delta\sqrt{n}=2\sqrt{25}=10$  
+- thresholds: `r paste(t_thresholds,sep=", ")`
+
+
+```{r sims}
+
+if(eval)
+  {
+  res_all_sim=laply(radii,function(radius){
+    temp_thr=laply(t_thresholds,function(t_threshold)
+          run_sims_all_effsizes(effsizes,t_threshold,radius))
+  dimnames(temp_thr)[[1]]=t_thresholds
+  temp_thr
+  })
+  dimnames(res_all_sim)[[1]]=radii
+  # res_all_sim
+  names(dimnames(res_all_sim))=c("radius","threshold","effect","B","stat")
+  
+  save(res_all_sim,file=paste0("./res_sim_v4/res_sim_v4_FWHM2/res_B_",B,"_PLOT.Rdata"))
+
+} else {
+  load(file=paste0("./res_sim_v4/res_sim_v4_FWHM2/res_B_",B,"_PLOT.Rdata"))
+}
+
+```
+
+
+# Results
+
+```{r}
+ratio=res_all_sim[,,,,"ARI_EST_discovs_in_supraThreshold"]/
+  res_all_sim[,,,,"N_ACTIVES_in_suprathreshold_set"]
+
+ratio[is.na(ratio)]=1
+ratio[!is.finite(ratio)]=1.1
+
+ratio=ratio[,,-1,]
+
+library(ggridges)  
+library(magrittr)
+library(gridExtra)
+
+```
+
+## Ratio density plots
+```{r, ratiodensityplot}
+
+###########
+pp=list()
+for(i_rad in 1:dim(ratio)[1])
+  for(i_thr in 1:dim(ratio)[2]){
+    res_sizes=data.frame(effect=rep(dimnames(ratio)[[3]],each=dim(ratio)[4]),
+ratio=matrix(t(ratio[i_rad,i_thr,,])))
+    res_sizes$effect=as.numeric(as.character(res_sizes$effect))
+    res_sizes$effect=as.factor(res_sizes$effect)
+    # myplot(res_sizes)
+    p=myggplot(res_sizes)
+    pp=c(pp,list(p))
+  }
+
+grid.arrange(grobs=pp,nrow = 3,ncol=3)
+
+
+```
+
+
+## ANY and AVE Power table
+```{r,eval=TRUE}
+
+knit_print.ftable_matrix(res_all_sim,options=list(ftable.digits=2))
+```
+
+## Detailed results (tables)
+```{r,results="asis"}
+res=aaply(res_all_sim,c(1,2,3,5),mean)
+
+for(i_rad in 1:dim(ratio)[1])
+  for(i_thr in 1:dim(ratio)[2]){
+cat("\nRadius: ",dimnames(res)[[1]][i_rad],",  Threshold: ",dimnames(res)[[2]][i_thr],sep="")
+    print(kable(t(res[i_rad,i_thr,,])))
+    }
+
+```
