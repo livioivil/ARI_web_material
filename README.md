@@ -6,4 +6,9 @@ https://cdn.rawgit.com/livioivil/ARI_web_material/b18c2e08/ari_simulations_resul
 - The `ARI` `R` package type:
 `install.packages("ARIbrain")`  
 - The simulations code together with the parameters setting can be found on
-https://github.com/livioivil/ARI_web_material/ari_simulations.Rmd
+<<<<<<< HEAD
+[https://github.com/livioivil/ARI_web_material/blob/master/ari_simulations.Rmd](https://raw.githubusercontent.com/livioivil/ARI_web_material/master/ari_simulations.Rmd)
+- The full repository is available at <https://github.com/livioivil/ARI_web_material>
+=======
+[https://github.com/livioivil/ARI_web_material/blob/master/ari_simulations.Rmd](https://raw.githubusercontent.com/livioivil/ARI_web_material/master/ari_simulations.Rmd)
+>>>>>>> master
